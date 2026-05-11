@@ -15,6 +15,7 @@ type Transaction = {
 
 export function TransactionList({
   transactions,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   categories,
 }: {
   transactions: Transaction[];
