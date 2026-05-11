@@ -45,11 +45,18 @@ export async function getMonthlyTrend(userId: string): Promise<TrendRow[]> {
     GROUP BY DATE_TRUNC('month', date)
     ORDER BY DATE_TRUNC('month', date) ASC
   `
-  return rows.map((r) => ({
-    month: r.month,
-    income: Number(r.income),
-    expenses: Number(r.expenses),
-  }))
+  const dataByMonth = new Map(
+    rows.map((r) => [r.month, { month: r.month, income: Number(r.income), expenses: Number(r.expenses) }])
+  )
+
+  const now = new Date()
+  const months: TrendRow[] = []
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+    months.push(dataByMonth.get(key) ?? { month: key, income: 0, expenses: 0 })
+  }
+  return months
 }
 
 export type CategoryBreakdownItem = {
@@ -74,8 +81,12 @@ export async function getCategoryBreakdown(userId: string): Promise<CategoryBrea
 
   const total = result.reduce((sum, r) => sum + Number(r._sum.amount ?? 0), 0)
 
+  const categoryIds = result
+    .map((r) => r.categoryId)
+    .filter((id): id is string => id !== null)
+
   const categories = await prisma.category.findMany({
-    where: { id: { in: result.map((r) => r.categoryId) } },
+    where: { id: { in: categoryIds } },
     select: { id: true, name: true, emoji: true, color: true },
   })
 
