@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Category } from "@prisma/client";
 import { deleteTransaction } from "./actions";
 
 type Transaction = {
@@ -10,16 +9,13 @@ type Transaction = {
   type: "INCOME" | "EXPENSE";
   description: string | null;
   date: Date;
-  category: Category;
+  category: { name: string; emoji: string };
 };
 
 export function TransactionList({
   transactions,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  categories,
 }: {
   transactions: Transaction[];
-  categories: Category[];
 }) {
   const [filter, setFilter] = useState<"ALL" | "INCOME" | "EXPENSE">("ALL");
 

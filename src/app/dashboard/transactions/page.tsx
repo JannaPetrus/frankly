@@ -25,7 +25,7 @@ export default async function TransactionsPage() {
         <h1 className="text-2xl font-bold text-gray-900">Транзакции</h1>
         <TransactionModal categories={categories} />
       </div>
-      <TransactionList transactions={transactions} categories={categories} />
+      <TransactionList transactions={transactions} />
     </div>
   );
 }
