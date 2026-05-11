@@ -32,8 +32,8 @@ export function ExpensePieChart({ data }: ExpensePieChartProps) {
               outerRadius={60}
               strokeWidth={0}
             >
-              {data.map((entry, i) => (
-                <Cell key={i} fill={entry.color} />
+              {data.map((entry) => (
+                <Cell key={entry.name} fill={entry.color} />
               ))}
             </Pie>
             <Tooltip
