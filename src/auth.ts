@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import { authConfig } from "@/auth.config";
 import { prisma } from "@/lib/prisma";
+import { defaultCategories } from "@/lib/default-categories";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
@@ -9,11 +10,28 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async signIn({ user }) {
       if (!user.email) return false;
 
-      await prisma.user.upsert({
+      const existingUser = await prisma.user.findUnique({
         where: { email: user.email },
-        update: { name: user.name, image: user.image },
-        create: { email: user.email, name: user.name, image: user.image },
       });
+
+      if (!existingUser) {
+        const newUser = await prisma.user.create({
+          data: { email: user.email, name: user.name, image: user.image },
+        });
+
+        await prisma.category.createMany({
+          data: defaultCategories.map((cat) => ({
+            ...cat,
+            isDefault: true,
+            userId: newUser.id,
+          })),
+        });
+      } else {
+        await prisma.user.update({
+          where: { id: existingUser.id },
+          data: { name: user.name, image: user.image },
+        });
+      }
 
       return true;
     },
