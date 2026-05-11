@@ -3,6 +3,7 @@ type MetricCardsProps = {
   expenses: number
   balance: number
   allTimeBalance: number
+  month: string
 }
 
 function formatCurrency(amount: number): string {
@@ -13,12 +14,7 @@ function formatCurrency(amount: number): string {
   }).format(amount)
 }
 
-function getMonthLabel(): string {
-  return new Date().toLocaleString('ru-RU', { month: 'long', year: 'numeric' })
-}
-
-export function MetricCards({ income, expenses, balance, allTimeBalance }: MetricCardsProps) {
-  const month = getMonthLabel()
+export function MetricCards({ income, expenses, balance, allTimeBalance, month }: MetricCardsProps) {
 
   const cards = [
     { label: 'Доходы', amount: income, color: '#16a34a', subtitle: `за ${month}` },

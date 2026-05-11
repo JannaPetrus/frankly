@@ -39,7 +39,7 @@ export function ExpensePieChart({ data }: ExpensePieChartProps) {
             <Tooltip
               formatter={(value) => {
                 if (typeof value === 'number') {
-                  return new Intl.NumberFormat('uk-UA').format(value)
+                  return new Intl.NumberFormat('uk-UA', { style: 'currency', currency: 'UAH', maximumFractionDigits: 0 }).format(value)
                 }
                 return value
               }}

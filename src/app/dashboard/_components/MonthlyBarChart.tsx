@@ -26,7 +26,7 @@ function formatMonth(month: string): string {
 }
 
 export function MonthlyBarChart({ data }: MonthlyBarChartProps) {
-  if (data.length === 0) {
+  if (data.every((d) => d.income === 0 && d.expenses === 0)) {
     return (
       <div className="bg-white border border-gray-200 rounded-xl p-4 flex items-center justify-center h-64">
         <p className="text-gray-400 text-sm">Нет данных за этот период</p>
@@ -57,7 +57,7 @@ export function MonthlyBarChart({ data }: MonthlyBarChartProps) {
           <Tooltip
             formatter={(value) => {
               if (typeof value === 'number') {
-                return new Intl.NumberFormat('uk-UA').format(value)
+                return new Intl.NumberFormat('uk-UA', { style: 'currency', currency: 'UAH', maximumFractionDigits: 0 }).format(value)
               }
               return value
             }}

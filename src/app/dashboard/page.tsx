@@ -34,6 +34,7 @@ export default async function DashboardPage() {
         expenses={metrics.expenses}
         balance={metrics.balance}
         allTimeBalance={allTime.allTimeBalance}
+        month={monthLabel}
       />
 
       <div className="grid grid-cols-5 gap-4">
