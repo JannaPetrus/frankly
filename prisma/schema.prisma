@@ -38,6 +38,8 @@ model Transaction {
   date        DateTime
   categoryId  String
   category    Category        @relation(fields: [categoryId], references: [id])
+  goalId      String?
+  goal        Goal?           @relation(fields: [goalId], references: [id])
   userId      String
   user        User            @relation(fields: [userId], references: [id])
   createdAt   DateTime        @default(now())
@@ -55,6 +57,7 @@ model Goal {
   user          User      @relation(fields: [userId], references: [id])
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  transactions  Transaction[]
 }
 
 enum CategoryType {
