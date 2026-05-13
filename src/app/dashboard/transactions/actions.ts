@@ -11,6 +11,7 @@ const TransactionSchema = z.object({
   description: z.string().optional(),
   date: z.string().min(1, "Укажите дату"),
   categoryId: z.string().min(1, "Выберите категорию"),
+  goalId: z.string().optional(),
 });
 
 async function getUserId() {
@@ -28,37 +29,54 @@ export async function createTransaction(formData: FormData) {
     description: formData.get("description"),
     date: formData.get("date"),
     categoryId: formData.get("categoryId"),
+    goalId: formData.get("goalId") || undefined,
   });
 
-  if (!parsed.success) {
-    return { error: parsed.error.issues[0].message };
+  if (!parsed.success) return { error: parsed.error.issues[0].message };
+
+  const { goalId, amount, type, description, date, categoryId } = parsed.data;
+
+  if (goalId && type === "INCOME") {
+    await prisma.$transaction([
+      prisma.transaction.create({
+        data: { amount, type, description, date: new Date(date), categoryId, userId, goalId },
+      }),
+      prisma.goal.update({
+        where: { id: goalId },
+        data: { currentAmount: { increment: amount } },
+      }),
+    ]);
+  } else {
+    await prisma.transaction.create({
+      data: { amount, type, description, date: new Date(date), categoryId, userId },
+    });
   }
 
-  const { amount, type, description, date, categoryId } = parsed.data;
-
-  await prisma.transaction.create({
-    data: {
-      amount,
-      type,
-      description,
-      date: new Date(date),
-      categoryId,
-      userId,
-    },
-  });
-
   revalidatePath("/dashboard/transactions");
+  revalidatePath("/dashboard/goals");
   return { success: true };
 }
 
 export async function deleteTransaction(id: string) {
   const userId = await getUserId();
 
-  await prisma.transaction.deleteMany({
-    where: { id, userId },
-  });
+  const tx = await prisma.transaction.findFirst({ where: { id, userId } });
+  if (!tx) return;
+
+  if (tx.goalId && tx.type === "INCOME") {
+    await prisma.$transaction([
+      prisma.transaction.deleteMany({ where: { id, userId } }),
+      prisma.goal.update({
+        where: { id: tx.goalId },
+        data: { currentAmount: { decrement: Number(tx.amount) } },
+      }),
+    ]);
+  } else {
+    await prisma.transaction.deleteMany({ where: { id, userId } });
+  }
 
   revalidatePath("/dashboard/transactions");
+  revalidatePath("/dashboard/goals");
 }
 
 export async function updateTransaction(id: string, formData: FormData) {
@@ -70,19 +88,44 @@ export async function updateTransaction(id: string, formData: FormData) {
     description: formData.get("description"),
     date: formData.get("date"),
     categoryId: formData.get("categoryId"),
+    goalId: formData.get("goalId") || undefined,
   });
 
-  if (!parsed.success) {
-    return { error: parsed.error.issues[0].message };
+  if (!parsed.success) return { error: parsed.error.issues[0].message };
+
+  const { goalId, amount, type, description, date, categoryId } = parsed.data;
+
+  const old = await prisma.transaction.findFirst({ where: { id, userId } });
+  if (!old) return { error: "Транзакция не найдена" };
+
+  const goalOps = [];
+
+  if (old.goalId && old.type === "INCOME") {
+    goalOps.push(
+      prisma.goal.update({
+        where: { id: old.goalId },
+        data: { currentAmount: { decrement: Number(old.amount) } },
+      })
+    );
+  }
+  if (goalId && type === "INCOME") {
+    goalOps.push(
+      prisma.goal.update({
+        where: { id: goalId },
+        data: { currentAmount: { increment: amount } },
+      })
+    );
   }
 
-  const { amount, type, description, date, categoryId } = parsed.data;
-
-  await prisma.transaction.updateMany({
-    where: { id, userId },
-    data: { amount, type, description, date: new Date(date), categoryId },
-  });
+  await prisma.$transaction([
+    prisma.transaction.updateMany({
+      where: { id, userId },
+      data: { amount, type, description, date: new Date(date), categoryId, goalId: goalId ?? null },
+    }),
+    ...goalOps,
+  ]);
 
   revalidatePath("/dashboard/transactions");
+  revalidatePath("/dashboard/goals");
   return { success: true };
 }

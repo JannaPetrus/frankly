@@ -1,10 +1,16 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Category } from "@prisma/client";
+import { Category, Goal } from "@prisma/client";
 import { createTransaction } from "./actions";
 
-export function TransactionModal({ categories }: { categories: Category[] }) {
+export function TransactionModal({
+  categories,
+  goals,
+}: {
+  categories: Category[];
+  goals: Goal[];
+}) {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState("");
   const [type, setType] = useState<"EXPENSE" | "INCOME">("EXPENSE");
@@ -89,6 +95,25 @@ export function TransactionModal({ categories }: { categories: Category[] }) {
                   ))}
                 </select>
               </div>
+
+              {type === "INCOME" && goals.length > 0 && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Привязать к цели (необязательно)
+                  </label>
+                  <select
+                    name="goalId"
+                    className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+                  >
+                    <option value="">— без цели —</option>
+                    {goals.map((g) => (
+                      <option key={g.id} value={g.id}>
+                        {g.emoji ?? "🎯"} {g.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Дата</label>
