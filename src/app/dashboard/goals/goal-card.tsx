@@ -54,7 +54,7 @@ export function GoalCard({ goal }: { goal: Goal }) {
         {progress}%
         {goal.deadline
           ? ` · до ${new Date(goal.deadline).toLocaleDateString("uk-UA")}`
-          : " · без строку"}
+          : " · без срока"}
       </div>
     </div>
   );
