@@ -15,8 +15,17 @@ export default async function CategoriesPage() {
   const income = categories.filter((c) => c.type === "INCOME");
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Категории</h1>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-[32px] font-semibold tracking-tight text-ink-900">
+          Категории
+        </h1>
+        <p className="mt-1 text-ink-500 text-[15px]">
+          {expenses.length} для расходов · {income.length} для доходов · можно
+          переименовать и менять цвет
+        </p>
+      </div>
+
       <CategoryList expenses={expenses} income={income} />
     </div>
   );
