@@ -13,16 +13,23 @@ export default async function GoalsPage() {
   });
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Цели</h1>
+    <div className="space-y-6">
+      <div className="flex items-end justify-between">
+        <div>
+          <h1 className="text-[32px] font-semibold tracking-tight text-ink-900">
+            Цели
+          </h1>
+          <p className="mt-1 text-ink-500 text-[15px]">
+            Откладывайте на важное и следите за прогрессом
+          </p>
+        </div>
         <GoalModal />
       </div>
 
       {goals.length === 0 ? (
-        <div className="text-center py-20 text-gray-400">
+        <div className="card py-20 text-center text-ink-400">
           <p className="text-4xl mb-3">🎯</p>
-          <p>Целей пока нет</p>
+          <p className="text-[14px]">Целей пока нет</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

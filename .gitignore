@@ -40,3 +40,6 @@ next-env.d.ts
 
 # brainstorming sessions
 .superpowers/
+
+# playwright browser test artifacts
+.playwright-mcp/

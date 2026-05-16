@@ -3,25 +3,124 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F7F7F4;
+  --foreground: #0F1115;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html, body {
+  background: var(--background);
+  color: var(--foreground);
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "ss01", "cv11";
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+  .text-balance { text-wrap: balance; }
+  .num   { font-family: var(--font-geist-sans), ui-sans-serif; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+  .mono  { font-family: var(--font-geist-mono), ui-monospace, monospace; font-variant-numeric: tabular-nums; }
 }
+
+@layer components {
+  /* ---------------- Buttons ---------------- */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 bg-ink-900 text-white font-medium rounded-xl px-4 py-2.5 text-sm transition;
+  }
+  .btn-primary:hover  { @apply bg-ink-700; box-shadow: 0 8px 18px -8px rgba(15,17,21,.35); }
+  .btn-primary:active { transform: translateY(1px); }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 bg-white text-ink-900 border border-ink-200 font-medium rounded-xl px-4 py-2.5 text-sm transition;
+  }
+  .btn-ghost:hover { @apply bg-paper border-ink-300; }
+
+  .icon-btn {
+    @apply inline-flex items-center justify-center w-9 h-9 rounded-lg text-ink-400 transition;
+  }
+  .icon-btn:hover { @apply bg-ink-100 text-ink-900; }
+
+  /* ---------------- Nav link with underline indicator ---------------- */
+  .nav-link {
+    @apply relative px-3 py-2 rounded-lg text-ink-500 transition;
+  }
+  .nav-link:hover { @apply text-ink-900 bg-ink-100/60; }
+  .nav-link[data-active="true"] { @apply text-ink-900; }
+  .nav-link[data-active="true"]::after {
+    content: '';
+    position: absolute;
+    left: 12px; right: 12px; bottom: -22px;
+    height: 2px;
+    background: #0F1115;
+    border-radius: 2px;
+  }
+
+  /* ---------------- Cards with hover lift ---------------- */
+  .card {
+    @apply bg-white border border-ink-200 rounded-2xl shadow-card;
+  }
+  .lift {
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  }
+  .lift:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 28px -16px rgba(15,17,21,0.12);
+    border-color: #D9DCE3;
+  }
+
+  /* ---------------- Hover row (transactions / categories) ---------------- */
+  .row { transition: background .15s ease; }
+  .row:hover { background: #FAFAF7; }
+  .row:hover .row-actions { opacity: 1; transform: translateX(0); }
+  .row-actions {
+    opacity: 0;
+    transform: translateX(4px);
+    transition: opacity .18s ease, transform .18s ease;
+  }
+
+  /* ---------------- Segmented filter chip ---------------- */
+  .chip {
+    @apply inline-flex items-center text-[13px] font-medium px-3.5 py-2 rounded-full transition;
+  }
+  .chip[data-active="true"]  { @apply bg-ink-900 text-white; }
+  .chip[data-active="false"] { @apply bg-white text-ink-500 border border-ink-200; }
+  .chip[data-active="false"]:hover { @apply bg-ink-100 text-ink-900; }
+
+  /* ---------------- Dashed add-card / add-row ---------------- */
+  .add-card {
+    border: 1.5px dashed #D9DCE3;
+    color: #8A9099;
+    transition: all .2s ease;
+    cursor: pointer;
+  }
+  .add-card:hover {
+    border-color: #4F46E5;
+    color: #4F46E5;
+    background: #F8F8FF;
+  }
+
+  /* ---------------- Dot (color swatch) ---------------- */
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    flex: none;
+    display: inline-block;
+  }
+
+  /* ---------------- Screen fade-in ---------------- */
+  .screen { animation: fade .25s ease; }
+}
+
+@keyframes fade {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ---------------- Scrollbar ---------------- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: #E4E6EB; border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: #B7BCC4; }
